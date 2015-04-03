@@ -46,6 +46,10 @@ public abstract class Edge {
 	 * Given one of the two nodes of the Edge, it returns the other one.
      * It is implemented like this due to the fact that it is not a directed
      * edge therefore there is no "origin" nor "destiny" node.
+     *
+     * Note that this function may only be used with a node n obtained with the
+     * getNode() operation. Otherwise this method wouldn't work as expected,
+     * because it compares the references, not the data.
 	 */
     public Node getNeighbor(Node n) {
         if (n == n1) return n2;
