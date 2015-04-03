@@ -2,10 +2,12 @@ package g13;
 
 /**
  * Created by miquel on 20/03/15.
+ *
+ * Eventhough it is named 'Edge' this class models undirected weighted edges.
  */
 public abstract class Edge {
     private static final String ERR_NOT_PART_EDGE =
-            "The node is not part of the edge";
+            "The node is not part of the edge!";
 
     // Both nodes are declared final. This is a good practice
     // when they're meant to be assigned only once, plus it is needed
@@ -26,16 +28,29 @@ public abstract class Edge {
 
     // TODO: Do we accept edges where m1 == m2? And again negative or 0 weights?
     /**
-     * @pre True
+     * @pre Both m1 and m2 are non-null
      * @post An Edge between the nodes n1 and n2 with weight w is created
      * @param m1
      * @param m2
      * @param w
      */
     public Edge(Node m1, Node m2, int w) {
+        if (m1 == null || m2 == null) throw new NullPointerException();
+
         n1 = m1;
         n2 = m2;
         weight = w;
+    }
+
+    /**
+     *
+     * @param m1
+     * @param m2
+     * @pre
+     * @post
+     */
+    public Edge(Node m1, Node m2) {
+        this(m1, m2, 1);
     }
 
 	/**
@@ -77,7 +92,12 @@ public abstract class Edge {
         final Edge e = (Edge) o;
         return e.n1.equals(n1) ?
                 e.n2.equals(n2) :
-                e.n1.equals(n2) && e.n2.equals(n1);
+                e.n1.equals(n2) && e.n2.equals(n1); // This could be made more
+                // efficient if we could define an ordering for the nodes,
+                // in a way that the creation operation (executed only once for
+                // an edge) would assign the smallest to n1 and the biggest to
+                // n2. In this fashion we wouldn't need to check every possible
+                // combination.
     }
 
     /**
@@ -88,8 +108,10 @@ public abstract class Edge {
      */
     @Override public int hashCode() {
         int hash = 3;
-        hash = 37*hash + (n1 != null ? n1.hashCode() : 0);
-        hash = 37*hash + (n2 != null ? n2.hashCode() : 0);
+
+        hash = 37*hash + n1.hashCode();
+        hash = 37*hash + n2.hashCode();
+
         return hash;
     }
 
