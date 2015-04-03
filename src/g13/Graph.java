@@ -5,8 +5,7 @@ import java.util.*;
 /**
  * Created by miquel on 20/03/15.
  */
-public abstract class Graph
-{
+public abstract class Graph {
     /**
      * As you can see the graph is created using the interfaces Map and Set
        (if you don't know what a java interface is google it), this way if you
