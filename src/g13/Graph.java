@@ -8,17 +8,8 @@ import java.util.*;
 public abstract class Graph {
     private static final String ERR_ADD_EXISTING_NODE =
             "Cannot add a node that already exists in the graph!";
-    private static final String ERR_DEL_INEX_NODE =
-            "Cannot delete a node which doesn't belong to the graph!";
-    private static final String ERR_ADD_EDGE_INEX_NODE =
-            "Cannot add an edge containing nodes which don't belong to " +
-                    "the graph!";
-    private static final String ERR_REMOVE_EDGE_INEX_NODE =
-            "Cannot remove an edge containing nodes which don't belong to " +
-                    "the graph";
-    private static final String ERR_GET_ADJ_INEX_NODE =
-            "Cannot get the adjacency set of a node which is not part of the" +
-                    " graph!";
+    private static final String ERR_INEX_NODE =
+            "The node doesn't belong to the graph";
 
     /**
      * As you can see the graph is created using the interfaces Map and Set
@@ -81,8 +72,7 @@ public abstract class Graph {
     public void deleteNode(Node n) {
         Set<Edge> s = G.get(n);
 
-        if (s == null)
-            throw new IllegalArgumentException(ERR_DEL_INEX_NODE);
+        if (s == null) throw new IllegalArgumentException(ERR_INEX_NODE);
 
         s.clear(); // Is this really necessary? Wouldn't the Garbage
                           // Collector just remove the set from memory if it's
@@ -91,6 +81,7 @@ public abstract class Graph {
         G.remove(n);
     }
 
+    // TODO: Do we accept repeated edges? (this should be checked at least for testing)
 	/**
      * @pre Both Nodes from the Edge e are part of the graph
      * @post The Edge e is added to the graph
@@ -104,7 +95,7 @@ public abstract class Graph {
         Set<Edge> s2 = G.get(n2);
 
         if (s1 == null || s2 == null)
-            throw new IllegalArgumentException(ERR_ADD_EDGE_INEX_NODE);
+            throw new IllegalArgumentException(ERR_INEX_NODE);
 
         s1.add(e);
         s2.add(e);
@@ -123,7 +114,7 @@ public abstract class Graph {
         Set<Edge> s2 = G.get(n2);
 
         if (s1 == null || s2 == null)
-            throw new IllegalArgumentException(ERR_REMOVE_EDGE_INEX_NODE);
+            throw new IllegalArgumentException(ERR_INEX_NODE);
 
         return s1.remove(e) && s2.remove(e);
     }
@@ -138,10 +129,17 @@ public abstract class Graph {
     public Set<Edge> getAdjacencyList(Node n) {
         Set<Edge> s = G.get(n);
 
-        if (s == null)
-            throw new IllegalArgumentException(ERR_GET_ADJ_INEX_NODE);
+        if (s == null) throw new IllegalArgumentException(ERR_INEX_NODE);
 
         return Collections.unmodifiableSet(s);
+    }
+
+    public boolean containsEdge(Edge e) {
+        Set<Edge> s = G.get(e.getNode());
+
+        if (s == null) throw new IllegalArgumentException(ERR_INEX_NODE);
+
+        return s.contains(e);
     }
 
 }
