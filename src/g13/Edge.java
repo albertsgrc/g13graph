@@ -37,8 +37,15 @@ public abstract class Edge {
     public Edge(Node m1, Node m2, int w) {
         if (m1 == null || m2 == null) throw new NullPointerException();
 
-        n1 = m1;
-        n2 = m2;
+        if (m2.isGreater(m1)) {
+            n1 = m1;
+            n2 = m2;
+        }
+        else {
+            n1 = m2;
+            n2 = m1;
+        }
+
         weight = w;
     }
 
@@ -88,16 +95,12 @@ public abstract class Edge {
     @Override public boolean equals(Object o) {
         // We don't check the weight as we don't expect to have two edges
         // with different weights joining the same pair of nodes in the graph
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         final Edge e = (Edge) o;
-        return e.n1.equals(n1) ?
-                e.n2.equals(n2) :
-                e.n1.equals(n2) && e.n2.equals(n1); // This could be made more
-                // efficient if we could define an ordering for the nodes,
-                // in a way that the creation operation (executed only once for
-                // an edge) would assign the smallest to n1 and the biggest to
-                // n2. In this fashion we wouldn't need to check every possible
-                // combination.
+
+        return e.n1.equals(n1) && e.n2.equals(n2);
     }
 
     /**
@@ -107,10 +110,8 @@ public abstract class Edge {
      * This method is needed for using Edges as HashSet or HashMap keys
      */
     @Override public int hashCode() {
-        int hash = 3;
-
-        hash = 37*hash + n1.hashCode();
-        hash = 37*hash + n2.hashCode();
+        int hash = n1.hashCode();
+        hash = 31*hash + n2.hashCode();
 
         return hash;
     }
@@ -124,10 +125,6 @@ public abstract class Edge {
      * Implement this function as you fancy
      */
     @Override public String toString() {
-        String s1 = n1.toString();
-        String s2 = n2.toString();
-        return s1.compareTo(s2) < 0 ?
-                s1 + ' ' + s2 + ' ' + weight :
-                s2 + ' ' + s1 + ' ' + weight;
+        return n1.toString() + ' ' + n2.toString() + ' ' + weight;
     }
 }

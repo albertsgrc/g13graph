@@ -6,17 +6,17 @@ import java.util.*;
  * Created by miquel on 20/03/15.
  */
 public abstract class Graph {
-    private static final String ERR_CANNOT_ADD_EXISTING_NODE =
+    private static final String ERR_ADD_EXISTING_NODE =
             "Cannot add a node that already exists in the graph!";
-    private static final String ERR_CANNOT_DEL_INEX_NODE =
+    private static final String ERR_DEL_INEX_NODE =
             "Cannot delete a node which doesn't belong to the graph!";
-    private static final String ERR_CANNOT_ADD_EDGE_INEX_NODE =
+    private static final String ERR_ADD_EDGE_INEX_NODE =
             "Cannot add an edge containing nodes which don't belong to " +
                     "the graph!";
-    private static final String ERR_CANNOT_REMOVE_EDGE_INEX_NODE =
+    private static final String ERR_REMOVE_EDGE_INEX_NODE =
             "Cannot remove an edge containing nodes which don't belong to " +
                     "the graph";
-    private static final String ERR_CANNOT_GET_ADJ_INEX_NODE =
+    private static final String ERR_GET_ADJ_INEX_NODE =
             "Cannot get the adjacency set of a node which is not part of the" +
                     " graph!";
 
@@ -67,7 +67,7 @@ public abstract class Graph {
 	 */
     public void addNode(Node n) {
         if (this.hasNode(n))
-            throw new IllegalArgumentException(ERR_CANNOT_ADD_EXISTING_NODE);
+            throw new IllegalArgumentException(ERR_ADD_EXISTING_NODE);
         else G.put(n, new LinkedHashSet<Edge>());
     }
 
@@ -82,7 +82,7 @@ public abstract class Graph {
         Set<Edge> s = G.get(n);
 
         if (s == null)
-            throw new IllegalArgumentException(ERR_CANNOT_DEL_INEX_NODE);
+            throw new IllegalArgumentException(ERR_DEL_INEX_NODE);
 
         s.clear(); // Is this really necessary? Wouldn't the Garbage
                           // Collector just remove the set from memory if it's
@@ -104,7 +104,7 @@ public abstract class Graph {
         Set<Edge> s2 = G.get(n2);
 
         if (s1 == null || s2 == null)
-            throw new IllegalArgumentException(ERR_CANNOT_ADD_EDGE_INEX_NODE);
+            throw new IllegalArgumentException(ERR_ADD_EDGE_INEX_NODE);
 
         s1.add(e);
         s2.add(e);
@@ -123,7 +123,7 @@ public abstract class Graph {
         Set<Edge> s2 = G.get(n2);
 
         if (s1 == null || s2 == null)
-            throw new IllegalArgumentException(ERR_CANNOT_REMOVE_EDGE_INEX_NODE);
+            throw new IllegalArgumentException(ERR_REMOVE_EDGE_INEX_NODE);
 
         return s1.remove(e) && s2.remove(e);
     }
@@ -135,13 +135,13 @@ public abstract class Graph {
      * @return
 	 * returns the set of edges of that node DO NOT MODIFY IT DIRECTLY
 	 */
-    public Set<Edge> getAdjacencySet(Node n) {
+    public Set<Edge> getAdjacencyList(Node n) {
         Set<Edge> s = G.get(n);
 
         if (s == null)
-            throw new IllegalArgumentException(ERR_CANNOT_GET_ADJ_INEX_NODE);
+            throw new IllegalArgumentException(ERR_GET_ADJ_INEX_NODE);
 
-        return s;
+        return Collections.unmodifiableSet(s);
     }
 
 }
