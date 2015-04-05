@@ -8,25 +8,28 @@ package g13;
 public abstract class Edge {
     private static final String ERR_NOT_PART_EDGE =
             "The node is not part of the edge!";
+    private static final String ERR_WEIGHT =
+            "Weight must be > 0!" ;
+    private static final String ERR_REC_LINK =
+            "Recursive links are not accepted!" ;
 
     // Both nodes are declared final. This is a good practice
     // when they're meant to be assigned only once, plus it is needed
     // to maintain coherence when using them as set keys
     private final Node n1;
     private final Node n2;
-    private int weight;
+    private double weight;
 
 
-	public int getWeight() {
+	public double getWeight() {
 		return weight;
 	}
 
-    // TODO: Do we accept zero or negative weight edges?
-	public void setWeight(int weight) {
-		this.weight = weight;
+	public void setWeight(double w) {
+        if (w <= 0) throw new IllegalArgumentException(ERR_WEIGHT);
+        else weight = w;
 	}
 
-    // TODO: Do we accept edges where m1 == m2? And again negative or 0 weights?
     /**
      * @pre Both m1 and m2 are non-null
      * @post An Edge between the nodes n1 and n2 with weight w is created
@@ -34,8 +37,11 @@ public abstract class Edge {
      * @param m2
      * @param w
      */
-    public Edge(Node m1, Node m2, int w) {
+    public Edge(Node m1, Node m2, double w) {
         if (m1 == null || m2 == null) throw new NullPointerException();
+        if (m1.equals(m2)) throw new IllegalArgumentException(ERR_REC_LINK);
+
+        setWeight(w);
 
         if (m2.isGreater(m1)) {
             n1 = m1;
@@ -45,8 +51,6 @@ public abstract class Edge {
             n1 = m2;
             n2 = m1;
         }
-
-        weight = w;
     }
 
     /**
@@ -118,13 +122,12 @@ public abstract class Edge {
 
     /**
      *
-     * @return Returns a String representing an Edge in a human readable format.
+     * @return Returns a String representing an Edge
      *         Note that the nodes of the edge are printed in lexicographical
      *         order, so both Edge 3,2 and Edge 2,3 would be printed as 2,3
      *
-     * Implement this function as you fancy
      */
     @Override public String toString() {
-        return n1.toString() + ' ' + n2.toString() + ' ' + weight;
+        return n1 + " " + n2 + " " + weight;
     }
 }

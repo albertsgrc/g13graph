@@ -3,14 +3,14 @@ package g13;
 /**
  * Created by miquel on 20/03/15.
  */
-public abstract class Node {
+public interface Node {
 
     /**
      *
      * @param o
      * @return
      */
-    @Override abstract public boolean equals(Object o);
+    @Override boolean equals(Object o);
 
     /**
      * Take a look at
@@ -18,18 +18,18 @@ public abstract class Node {
      * for guidelines on implementing this function
      * @return
      */
-    @Override abstract public int hashCode();
+    @Override int hashCode();
 
     /**
      *
      * @return
      */
-    @Override abstract public String toString();
+    @Override String toString();
 
     /**
      *
      * @param n
      * @return
      */
-    abstract public boolean isGreater(Node n);
+    boolean isGreater(Node n);
 }

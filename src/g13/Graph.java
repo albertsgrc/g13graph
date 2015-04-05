@@ -11,24 +11,7 @@ public abstract class Graph {
     private static final String ERR_INEX_NODE =
             "The node doesn't belong to the graph";
 
-    /**
-     * As you can see the graph is created using the interfaces Map and Set
-       (if you don't know what a java interface is google it), this way if you
-       need to keep the edges or the nodes in a certain order you can use
-       the type of Map/Set (See java.utils documentation) according to your
-       needs, n this implementation I will use LinkedHashedMap because
-       I don't care much about the order so it uses the entry one.
-       If you are interested in a certain ordering consider using TreeMaps
-       (all valid for sets too)
-     */
     private Map<Node, Set<Edge>> G;
-
-    /**
-     * g13.Graph getter for subclasses
-     */
-    protected Map<Node, Set<Edge>> getGraph() {
-        return G;
-    }
 
     /**
      * @pre True
@@ -37,6 +20,41 @@ public abstract class Graph {
 	 */
     public Graph() {
         G = new LinkedHashMap<Node, Set<Edge>>();
+    }
+
+    /**
+     * g13.Graph getter for subclasses
+     */
+    protected Map<Node, Set<Edge>> getGraph() {
+        return G;
+    }
+
+    public int getOrder() {
+        return G.keySet().size();
+    }
+
+    public int getEdgeCount() {
+        return G.size()/2;
+    }
+
+
+    /**
+     * @pre n is part of the graph
+     * @post Returns the set of edges of a node
+     * @param n
+     * @return
+     * returns the set of edges of that node DO NOT MODIFY IT DIRECTLY
+     */
+    public Set<Edge> getAdjacencyList(Node n) {
+        return Collections.unmodifiableSet(getModifiableAdjacencyList(n));
+    }
+
+    private Set<Edge> getModifiableAdjacencyList(Node n) {
+        Set<Edge> s = G.get(n);
+
+        if (s == null) throw new IllegalArgumentException(ERR_INEX_NODE);
+
+        return s;
     }
 
 	/**
@@ -48,6 +66,33 @@ public abstract class Graph {
 	 */
     public boolean hasNode(Node n) {
         return G.containsKey(n);
+    }
+
+    public int getNodeDegree(Node n) {
+        return getAdjacencyList(n).size();
+    }
+
+    public boolean containsEdge(Edge e) {
+        return getAdjacencyList(e.getNode()).contains(e);
+    }
+
+    @Override public String toString() {
+        final String NEW_LINE = System.getProperty("line.separator");
+        StringBuilder s = new StringBuilder();
+
+        s.append("Order: ").append(getOrder())
+                .append(" Number of edges: ").append(getEdgeCount())
+                .append(NEW_LINE).append(NEW_LINE)
+                .append("Nodes:").append(NEW_LINE);
+
+        for (Node n : G.keySet()) s.append("    ").append(n).append(NEW_LINE);
+
+        s.append(NEW_LINE).append("Edges:").append(NEW_LINE);
+
+        for (Set<Edge> set : G.values())
+            for (Edge e : set) s.append("    ").append(e).append(NEW_LINE);
+
+        return s.toString();
     }
 
 	/**
@@ -69,36 +114,21 @@ public abstract class Graph {
 	 * The node n is deleted, so are all its edges, including its neighbors
      * edges
 	 */
-    public void deleteNode(Node n) {
-        Set<Edge> s = G.get(n);
-
-        if (s == null) throw new IllegalArgumentException(ERR_INEX_NODE);
-
-        s.clear(); // Is this really necessary? Wouldn't the Garbage
-                          // Collector just remove the set from memory if it's
-                          // no longer referenced by anyone after removing
-                          // the key from the map?
+    public void removeNode(Node n) {
         G.remove(n);
     }
 
-    // TODO: Do we accept repeated edges? (this should be checked at least for testing)
 	/**
      * @pre Both Nodes from the Edge e are part of the graph
-     * @post The Edge e is added to the graph
+     * @post The Edge e is added to the graph iff it was not already present
      * @param e
 	 */
     public void addEdge(Edge e) {
         Node n1 = e.getNode();
         Node n2 = e.getNeighbor(n1);
 
-        Set<Edge> s1 = G.get(n1);
-        Set<Edge> s2 = G.get(n2);
-
-        if (s1 == null || s2 == null)
-            throw new IllegalArgumentException(ERR_INEX_NODE);
-
-        s1.add(e);
-        s2.add(e);
+        getModifiableAdjacencyList(n1).add(e);
+        getModifiableAdjacencyList(n2).add(e);
     }
 
 	/**
@@ -110,36 +140,7 @@ public abstract class Graph {
         Node n1 = e.getNode();
         Node n2 = e.getNeighbor(n1);
 
-        Set<Edge> s1 = G.get(n1);
-        Set<Edge> s2 = G.get(n2);
-
-        if (s1 == null || s2 == null)
-            throw new IllegalArgumentException(ERR_INEX_NODE);
-
-        return s1.remove(e) && s2.remove(e);
+        return getModifiableAdjacencyList(n1).remove(e) &&
+                getModifiableAdjacencyList(n2).remove(e);
     }
-
-	/**
-     * @pre n is part of the graph
-     * @post Returns the set of edges of a node
-     * @param n
-     * @return
-	 * returns the set of edges of that node DO NOT MODIFY IT DIRECTLY
-	 */
-    public Set<Edge> getAdjacencyList(Node n) {
-        Set<Edge> s = G.get(n);
-
-        if (s == null) throw new IllegalArgumentException(ERR_INEX_NODE);
-
-        return Collections.unmodifiableSet(s);
-    }
-
-    public boolean containsEdge(Edge e) {
-        Set<Edge> s = G.get(e.getNode());
-
-        if (s == null) throw new IllegalArgumentException(ERR_INEX_NODE);
-
-        return s.contains(e);
-    }
-
 }
