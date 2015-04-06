@@ -10,12 +10,14 @@ public abstract class Graph {
             "The node doesn't belong to the graph";
 
     private Map<Node, Set<Edge>> G;
+    int edgeCount;
 
     /**
      * Creates an empty Graph
 	 */
     public Graph() {
         G = new LinkedHashMap<Node, Set<Edge>>();
+        edgeCount = 0;
     }
 
     // TODO: Discuss together (with Horacio) about this method
@@ -34,7 +36,7 @@ public abstract class Graph {
      * @return the order of the graph.
      */
     public int getOrder() {
-        return G.keySet().size();
+        return G.size();
     }
 
     /**
@@ -42,7 +44,7 @@ public abstract class Graph {
      * @return the number of edges of the graph
      */
     public int getEdgeCount() {
-        return G.size()/2;
+        return edgeCount;
     }
 
     /**
@@ -196,6 +198,7 @@ public abstract class Graph {
 
         if (!this.hasNode(n)) return false;
         else {
+            edgeCount -= getNodeDegree(n);
             G.remove(n);
             return true;
         }
@@ -214,8 +217,9 @@ public abstract class Graph {
         Node n1 = e.getNode();
         Node n2 = e.getNeighbor(n1);
 
-        getModifiableAdjacencyList(n1).add(e);
-        getModifiableAdjacencyList(n2).add(e);
+        boolean added = getModifiableAdjacencyList(n1).add(e) &&
+                        getModifiableAdjacencyList(n2).add(e);
+        if (added) ++edgeCount;
     }
 
     /**
@@ -231,8 +235,10 @@ public abstract class Graph {
         Node n1 = e.getNode();
         Node n2 = e.getNeighbor(n1);
 
-        return getModifiableAdjacencyList(n1).remove(e) &&
-                getModifiableAdjacencyList(n2).remove(e);
+        boolean removed = getModifiableAdjacencyList(n1).remove(e) &&
+                          getModifiableAdjacencyList(n2).remove(e);
+        if (removed) --edgeCount;
+        return removed;
     }
 
     /**
