@@ -2,10 +2,8 @@ package g13;
 
 import java.util.*;
 
-/**
- * Created by miquel on 20/03/15.
- */
 public abstract class Graph {
+
     private static final String ERR_ADD_EXISTING_NODE =
             "Cannot add a node that already exists in the graph!";
     private static final String ERR_INEX_NODE =
@@ -14,42 +12,91 @@ public abstract class Graph {
     private Map<Node, Set<Edge>> G;
 
     /**
-     * @pre True
-     * @post An empty graph is created
-	 * Creates an empty graph
+     * Creates an empty Graph
 	 */
     public Graph() {
         G = new LinkedHashMap<Node, Set<Edge>>();
     }
 
+    // TODO: Discuss together (with Horacio) about this method
     /**
-     * g13.Graph getter for subclasses
+     * Returns a modifiable version of the Graph. Note that all the
+     * the modifications applied to the returned Map will also be applied
+     * to the Graph object.
+     * @return A modifiable version of the Graph
      */
     protected Map<Node, Set<Edge>> getGraph() {
         return G;
     }
 
+    /**
+     * Returns the order i.e number of nodes of the graph
+     * @return the order of the graph.
+     */
     public int getOrder() {
         return G.keySet().size();
     }
 
+    /**
+     * Returns the size i.e number of edges of the graph.
+     * @return the number of edges of the graph
+     */
     public int getEdgeCount() {
         return G.size()/2;
     }
 
+    /**
+     * Returns a <strong>non-modifiable</strong> version of the set of nodes
+     * of the Graph.
+     * @return a non-modifiable set of the nodes of the graph
+     */
+    public Set<Node> getNodeSet() {
+        return Collections.unmodifiableSet(G.keySet());
+    }
+
+    // TODO: Ask Horacio on whether we can use com.google.common.collect.Sets
+    // TODO: guava-library to create an unmodifiable view of the union of
+    // TODO: the sets via its union() function, which does not copy elements
+    // TODO: as the java.util.set.addAll does (it's much more efficient)
+    /**
+     * Returns a <strong>non-modifiable</strong> version of the set of edges
+     * of the Graph.
+     * @return a non-modifiable set with the edges of the graph
+     */
+    public Set<Edge> getEdgeSet() {
+        Set<Edge> result = new LinkedHashSet<Edge>();
+        for (Set<Edge> e : G.values()) result.addAll(e);
+        return Collections.unmodifiableSet(result);
+    }
 
     /**
-     * @pre n is part of the graph
-     * @post Returns the set of edges of a node
-     * @param n
-     * @return
-     * returns the set of edges of that node DO NOT MODIFY IT DIRECTLY
+     * Returns a <strong>non-modifiable</strong> version of the adjacency
+     * list of a given node.
+     * @param n The node whose adjacency list is requested
+     * @return a non-modifiable set with the adjacent edges of the node n'
+     * such that n' belongs to the graph and n.equals(n')
+     * @throws IllegalArgumentException if the node n doesn't belong
+     * to the Graph
+     * @throws NullPointerException if the node n is null
      */
     public Set<Edge> getAdjacencyList(Node n) {
         return Collections.unmodifiableSet(getModifiableAdjacencyList(n));
     }
 
+    /**
+     * Returns a modifiable version of the adjacency list of a given node.
+     * Note that all the changes made to the returned set will be reflected
+     * in the actual Graph object.
+     * @param n The node whose adjacency list is requested
+     * @return a modifiable set with the adjacent edges of the node n'
+     * such that n' belongs to the graph and n.equals(n')
+     * @throws IllegalArgumentException if the node n doesn't belong
+     * to the Graph
+     * @throws NullPointerException if the node n is null
+     */
     private Set<Edge> getModifiableAdjacencyList(Node n) {
+        if (n == null) throw new NullPointerException();
+
         Set<Edge> s = G.get(n);
 
         if (s == null) throw new IllegalArgumentException(ERR_INEX_NODE);
@@ -58,24 +105,52 @@ public abstract class Graph {
     }
 
 	/**
-     * @pre True
-     * @post Returns true if the node is in the graph, false otherwise
-	 * @param n
-	 * @return
-     * Returns true if the node is in the graph, false otherwise
+     * Returns whether the node n belongs to the Graph.
+	 * @param n The node to test for belonging to the graph
+	 * @return true if there exists a node n' such that it belongs to the graph
+     * and n.equals(n')
+     * @throws NullPointerException if n is null
 	 */
     public boolean hasNode(Node n) {
+        if (n == null) throw new NullPointerException();
         return G.containsKey(n);
     }
 
+    /**
+     * Returns the degree i.e number of adjacent nodes to a given node of the
+     * Graph.
+     * @param n the node from which to get the degree
+     * @return the degree of the node n' such that n' belongs to the graph
+     * and n.equals(n')
+     * @throws NullPointerException if n is null
+     * @throws IllegalArgumentException if the node n doesn't belong to the
+     * graph
+     */
     public int getNodeDegree(Node n) {
         return getAdjacencyList(n).size();
     }
 
+    /**
+     * Returns whether the Graph contains a given Edge <strong>formed by nodes
+     * belonging to the graph</strong>.
+     * @param e The edge to test for belonging to the graph
+     * @return true if there exists an edge e' such that it belongs to the graph
+     * and e.equals(e')
+     * @throws NullPointerException if e is null
+     * @throws IllegalArgumentException if one or both nodes of the edge e
+     * don't belong to the graph
+     */
     public boolean containsEdge(Edge e) {
         return getAdjacencyList(e.getNode()).contains(e);
     }
 
+    /**
+     * Returns a string representation of the graph. First the Graph
+     * order and number of edges are printed in the same line,
+     * followed by the list of nodes of the graph, followed by the list of
+     * edges of the graph. The string ends with a new line.
+     * @return a string representation of the graph.
+     */
     @Override public String toString() {
         final String NEW_LINE = System.getProperty("line.separator");
         StringBuilder s = new StringBuilder();
@@ -95,34 +170,46 @@ public abstract class Graph {
         return s.toString();
     }
 
-	/**
-     * @pre The Node n is not part of the graph
-     * @post The Node n is part of the graph
-     * @param n
-	 * The argument is added to the graph, without adjacencies
-	 */
+    /**
+     * Adds a node to the graph. Note that the node <strong>must</strong>
+     * not belong to the Graph before the call i.e there must not be any node
+     * n' belonging to the Graph such that n.equals(n')
+     * @param n The node to add to the graph
+     * @throws IllegalArgumentException if the node n already belongs to the
+     * graph
+     */
     public void addNode(Node n) {
         if (this.hasNode(n))
             throw new IllegalArgumentException(ERR_ADD_EXISTING_NODE);
         else G.put(n, new LinkedHashSet<Edge>());
     }
 
-	/**
-     * @pre The Node n is part of the graph
-     * @post The Node n is not a part of the graph
-     * @param n
-	 * The node n is deleted, so are all its edges, including its neighbors
-     * edges
-	 */
-    public void removeNode(Node n) {
-        G.remove(n);
+    /**
+     * Removes a given node n' from the graph if it belonged to the Graph
+     * and returns whether it belonged (i.e whether the graph has been modified
+     * by the call). The node n' is such that n.equals(n')
+     * @param n the node to remove from the graph
+     * @return true if the node belonged to the graph before the removal try
+     */
+    public boolean removeNode(Node n) {
+        if (n == null) throw new NullPointerException();
+
+        if (!this.hasNode(n)) return false;
+        else {
+            G.remove(n);
+            return true;
+        }
     }
 
-	/**
-     * @pre Both Nodes from the Edge e are part of the graph
-     * @post The Edge e is added to the graph iff it was not already present
-     * @param e
-	 */
+    /**
+     * Adds a given edge to the Graph. Note that the edge will not be added if
+     * it already belongs to the Graph, i.e there is an edge e' such that
+     * e' belongs to the Graph and e.equals(e')
+     * @param e The edge to add to the graph
+     * @throws NullPointerException if e is null
+     * @throws IllegalArgumentException if one or both of the nodes of the edge
+     * don't belong to the graph
+     */
     public void addEdge(Edge e) {
         Node n1 = e.getNode();
         Node n2 = e.getNeighbor(n1);
@@ -131,11 +218,15 @@ public abstract class Graph {
         getModifiableAdjacencyList(n2).add(e);
     }
 
-	/**
-     * @pre The nodes of e are part of the graph
-     * @post Returns true if and only if e was removed from the graph
-     * @param e
-	 */
+    /**
+     * Removes an edge e' from the graph and returns whether the edge was in
+     * the graph before the call. e' is such that e.equals(e').
+     * @param e The edge to remove
+     * @return true if the edge belonged to the graph before the removal try
+     * @throws NullPointerException if e is null
+     * @throws IllegalArgumentException if one or both of the nodes of the edge
+     * don't belong to the graph
+     */
     public boolean removeEdge(Edge e) {
         Node n1 = e.getNode();
         Node n2 = e.getNeighbor(n1);
@@ -143,4 +234,20 @@ public abstract class Graph {
         return getModifiableAdjacencyList(n1).remove(e) &&
                 getModifiableAdjacencyList(n2).remove(e);
     }
+
+    /**
+     * Removes an edge identified by two nodes n1, n2 from the graph and returns
+     * whether the edge was in the graph before the call. The edge to be removed
+     * is such that it belongs to the graph and it contains two nodes n1', n2'
+     * such that n1.equals(n1') and n2.equals(n2') or n1.equals(n2') and
+     * n2.equals(n1')
+     * @param n1 One of the nodes of the edge to remove
+     * @param n2 The other node of the edge to remove
+     * @return true if the edge belonged to the graph before the removal try
+     * @throws NullPointerException if n1 is null or n2 is null
+     * @throws IllegalArgumentException if one or both of the nodes of the edge
+     * don't belong to the graph
+     */
+    public abstract boolean removeEdge(Node n1, Node n2);
+
 }

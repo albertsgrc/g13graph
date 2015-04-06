@@ -1,15 +1,14 @@
 package g13;
 
 /**
- * Created by miquel on 20/03/15.
- *
  * Eventhough it is named 'Edge' this class models undirected weighted edges.
  */
 public abstract class Edge {
+
     private static final String ERR_NOT_PART_EDGE =
             "The node is not part of the edge!";
     private static final String ERR_WEIGHT =
-            "Weight must be > 0!" ;
+            "Weight must be a number > 0!" ;
     private static final String ERR_REC_LINK =
             "Recursive links are not accepted!" ;
 
@@ -20,22 +19,37 @@ public abstract class Edge {
     private final Node n2;
     private double weight;
 
-
+    /**
+     * Returns the Edge's weight
+     * @return the Edge's weight
+     */
 	public double getWeight() {
 		return weight;
 	}
 
+    /**
+     * Edge's weight setter. The supplied weight value
+     * <strong>must be a strictly positive number</strong>.
+     * @param w The desired weight value for the edge.
+     * @throws IllegalArgumentException if the weight is not a strictly positive
+     * number
+     */
 	public void setWeight(double w) {
-        if (w <= 0) throw new IllegalArgumentException(ERR_WEIGHT);
+        if (Double.isNaN(w) || w <= 0)
+            throw new IllegalArgumentException(ERR_WEIGHT);
         else weight = w;
 	}
 
     /**
-     * @pre Both m1 and m2 are non-null
-     * @post An Edge between the nodes n1 and n2 with weight w is created
-     * @param m1
-     * @param m2
-     * @param w
+     * Creates a weighted edge between two nodes. Note that the two nodes
+     * supplied <strong>must not be the same</strong> and
+     * <strong>the weight must be a strictly positive number</strong>
+     * @param m1 One of the two nodes of the edge
+     * @param m2 The other node of the edge
+     * @param w The weight of the edge
+     * @throws NullPointerException if m1 is null or m2 is null
+     * @throws IllegalArgumentException if {@code m1.equals(m2)} or w is not a
+     * strictly positive number
      */
     public Edge(Node m1, Node m2, double w) {
         if (m1 == null || m2 == null) throw new NullPointerException();
@@ -53,48 +67,36 @@ public abstract class Edge {
         }
     }
 
-    /**
-     *
-     * @param m1
-     * @param m2
-     * @pre
-     * @post
-     */
-    public Edge(Node m1, Node m2) {
-        this(m1, m2, 1);
-    }
-
 	/**
-     * @pre The Node n is part of the Edge
-     * @post The other Node from the Edge is returned
-     * @param n
-     * @return
-	 * Given one of the two nodes of the Edge, it returns the other one.
-     * It is implemented like this due to the fact that it is not a directed
-     * edge therefore there is no "origin" nor "destiny" node.
+     * If n is a node that belongs to the edge (i.e the edge contains a node n'
+     * such that n.equals(n')), this function returns its neighbor.
+     * Otherwise it will throw an exception.
+     * @param n The node whose neighbor is requested
+     * @return Given one of the two nodes of the Edge, it returns the other one.
      *
-     * Note that this function may only be used with a node n obtained with the
-     * getNode() operation. Otherwise this method wouldn't work as expected,
-     * because it compares the references, not the data.
+     * @throws NullPointerException if n is null
+     * @throws IllegalArgumentException if n is not one of the nodes of the edge
 	 */
     public Node getNeighbor(Node n) {
-        if (n == n1) return n2;
-        else if (n == n2) return n1;
+        if (n == null) throw new NullPointerException();
+
+        if (n.equals(n1)) return n2;
+        else if (n.equals(n2)) return n1;
         else throw new IllegalArgumentException(ERR_NOT_PART_EDGE);
     }
 
 	/**
-	 * @return A node of the edge
+     * Returns the smallest node of the edge
+	 * @return the smallest node of the edge
 	 */
     public Node getNode() {
         return n1;
     }
 
     /**
-     * @param o
-     * @return
-     * Returns true if and only if the edge e has equal
-     * nodes as this Edge (no matter the order)
+     * @param o The object to compare with the edge
+     * @return Returns true if and only if the edge e has equal nodes as this
+     * Edge (no matter the order)
      */
     @Override public boolean equals(Object o) {
         // We don't check the weight as we don't expect to have two edges
@@ -108,10 +110,9 @@ public abstract class Edge {
     }
 
     /**
-     *
-     * @return Returns equal integers for equal edges (as defined in
-     *         the equals method).
-     * This method is needed for using Edges as HashSet or HashMap keys
+     * Returns a hash code value for this edge. Note that this method is needed
+     * for using Edges as HashSet or HashMap keys properly
+     * @return Returns a hash code value for this edge
      */
     @Override public int hashCode() {
         int hash = n1.hashCode();
@@ -121,11 +122,10 @@ public abstract class Edge {
     }
 
     /**
-     *
-     * @return Returns a String representing an Edge
-     *         Note that the nodes of the edge are printed in lexicographical
-     *         order, so both Edge 3,2 and Edge 2,3 would be printed as 2,3
-     *
+     * Returns a String representation of the Edge. Note that the nodes of the
+     * edge are printed in increasing order, so for example if nodes were
+     * integers both Edge 3,2 and Edge 2,3 would be printed as 2,3
+     * @return a String representation of the Edge
      */
     @Override public String toString() {
         return n1 + " " + n2 + " " + weight;
