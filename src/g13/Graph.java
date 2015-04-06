@@ -205,21 +205,24 @@ public abstract class Graph {
     }
 
     /**
-     * Adds a given edge to the Graph. Note that the edge will not be added if
-     * it already belongs to the Graph, i.e there is an edge e' such that
-     * e' belongs to the Graph and e.equals(e')
+     * Adds a given edge to the Graph and returns whether it didn't already
+     * belong to the graph before the call. Note that the graph will not be
+     * modified if the edge already belongs to the Graph, i.e there is an edge
+     * e' such that e' belongs to the Graph and e.equals(e')
      * @param e The edge to add to the graph
+     * @return true if the edge didn't belong to the graph before the call
      * @throws NullPointerException if e is null
      * @throws IllegalArgumentException if one or both of the nodes of the edge
      * don't belong to the graph
      */
-    public void addEdge(Edge e) {
+    public boolean addEdge(Edge e) {
         Node n1 = e.getNode();
         Node n2 = e.getNeighbor(n1);
 
         boolean added = getModifiableAdjacencyList(n1).add(e) &&
                         getModifiableAdjacencyList(n2).add(e);
         if (added) ++edgeCount;
+        return added;
     }
 
     /**

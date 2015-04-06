@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="f29c2ce1-cc1f-4a3a-b690-639ecdf64e1c" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/g13/Graph.java" afterPath="$PROJECT_DIR$/src/g13/Graph.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Graph.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -51,8 +52,8 @@
       <file leaf-file-name="Graph.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/g13/Graph.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.4090909">
-              <caret line="238" column="67" selection-start-line="238" selection-start-column="67" selection-end-line="238" selection-end-column="67" />
+            <state vertical-scroll-proportion="0.6818182">
+              <caret line="212" column="74" selection-start-line="212" selection-start-column="74" selection-end-line="212" selection-end-column="74" />
               <folding>
                 <element signature="e#834#835#0" expanded="true" />
                 <element signature="e#858#859#0" expanded="true" />
@@ -451,12 +452,12 @@
       <updated>1428009545904</updated>
       <workItem from="1428009547625" duration="3799000" />
       <workItem from="1428053436858" duration="43615000" />
-      <workItem from="1428243652370" duration="14631000" />
+      <workItem from="1428243652370" duration="14954000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="62045000" />
+    <option name="totallyTimeSpent" value="62368000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1366" y="-1" width="1920" height="1081" extended-state="6" />
@@ -598,8 +599,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/g13/Graph.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.4090909">
-          <caret line="238" column="67" selection-start-line="238" selection-start-column="67" selection-end-line="238" selection-end-column="67" />
+        <state vertical-scroll-proportion="0.6818182">
+          <caret line="212" column="74" selection-start-line="212" selection-start-column="74" selection-end-line="212" selection-end-column="74" />
           <folding>
             <element signature="e#834#835#0" expanded="true" />
             <element signature="e#858#859#0" expanded="true" />
