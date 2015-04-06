@@ -199,6 +199,7 @@ public abstract class Graph {
         if (!this.hasNode(n)) return false;
         else {
             edgeCount -= getNodeDegree(n);
+            for (Edge e : G.get(n)) G.get(e.getNeighbor(n)).remove(e);
             G.remove(n);
             return true;
         }
@@ -212,7 +213,7 @@ public abstract class Graph {
      * @param e The edge to add to the graph
      * @return true if the edge didn't belong to the graph before the call
      * @throws NullPointerException if e is null
-     * @throws IllegalArgumentException if one or both of the nodes of the edge
+     * @throws IllegalArgumentException if one or both nodes of the edge
      * don't belong to the graph
      */
     public boolean addEdge(Edge e) {
@@ -231,7 +232,7 @@ public abstract class Graph {
      * @param e The edge to remove
      * @return true if the edge belonged to the graph before the removal try
      * @throws NullPointerException if e is null
-     * @throws IllegalArgumentException if one or both of the nodes of the edge
+     * @throws IllegalArgumentException if one or both nodes of the edge
      * don't belong to the graph
      */
     public boolean removeEdge(Edge e) {
@@ -254,7 +255,7 @@ public abstract class Graph {
      * @param n2 The other node of the edge to remove
      * @return true if the edge belonged to the graph before the removal try
      * @throws NullPointerException if n1 is null or n2 is null
-     * @throws IllegalArgumentException if one or both of the nodes of the edge
+     * @throws IllegalArgumentException if one or both nodes of the edge
      * don't belong to the graph
      */
     public abstract boolean removeEdge(Node n1, Node n2);
