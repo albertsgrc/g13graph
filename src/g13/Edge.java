@@ -9,8 +9,6 @@ public abstract class Edge {
             "The node is not part of the edge!";
     private static final String ERR_WEIGHT =
             "Weight must be a number > 0!" ;
-    private static final String ERR_REC_LINK =
-            "Recursive links are not accepted!" ;
 
     // Both nodes are declared final. This is a good practice
     // when they're meant to be assigned only once, plus it is needed
@@ -41,19 +39,17 @@ public abstract class Edge {
 	}
 
     /**
-     * Creates a weighted edge between two nodes. Note that the two nodes
-     * supplied <strong>must not be the same</strong> and
-     * <strong>the weight must be a strictly positive number</strong>
+     * Creates a weighted edge between two nodes. Note that
+     * <strong>the node weight must be a strictly positive number</strong>
      * @param m1 One of the two nodes of the edge
      * @param m2 The other node of the edge
      * @param w The weight of the edge
      * @throws NullPointerException if m1 is null or m2 is null
-     * @throws IllegalArgumentException if {@code m1.equals(m2)} or w is not a
+     * @throws IllegalArgumentException if w is not a
      * strictly positive number
      */
     public Edge(Node m1, Node m2, double w) {
         if (m1 == null || m2 == null) throw new NullPointerException();
-        if (m1.equals(m2)) throw new IllegalArgumentException(ERR_REC_LINK);
 
         setWeight(w);
 

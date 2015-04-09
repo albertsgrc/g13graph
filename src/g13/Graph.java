@@ -19,18 +19,7 @@ public abstract class Graph {
         G = new LinkedHashMap<Node, Set<Edge>>();
         edgeCount = 0;
     }
-
-    // TODO: Discuss together (with Horacio) about this method
-    /**
-     * Returns a modifiable version of the Graph. Note that all the
-     * the modifications applied to the returned Map will also be applied
-     * to the Graph object.
-     * @return A modifiable version of the Graph
-     */
-    protected Map<Node, Set<Edge>> getGraph() {
-        return G;
-    }
-
+    
     /**
      * Returns the order i.e number of nodes of the graph
      * @return the order of the graph.
@@ -56,10 +45,6 @@ public abstract class Graph {
         return Collections.unmodifiableSet(G.keySet());
     }
 
-    // TODO: Ask Horacio on whether we can use com.google.common.collect.Sets
-    // TODO: guava-library to create an unmodifiable view of the union of
-    // TODO: the sets via its union() function, which does not copy elements
-    // TODO: as the java.util.set.addAll does (it's much more efficient)
     /**
      * Returns a <strong>non-modifiable</strong> version of the set of edges
      * of the Graph.
