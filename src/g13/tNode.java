@@ -5,15 +5,9 @@ package g13;
  */
 public class tNode extends Node {
     private final int key;
-    private String value;
-
-    public tNode(int key, String value) {
-        this.key = key;
-        this.value = value;
-    }
 
     public tNode(int key) {
-        this(key, null);
+        this.key = key;
     }
 
     @Override
@@ -36,14 +30,6 @@ public class tNode extends Node {
     @Override
     public boolean isGreater(Node n) {
         return ((tNode) n).getKey() < this.key;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
     }
 
     public int getKey() {
