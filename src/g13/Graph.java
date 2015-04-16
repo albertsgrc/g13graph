@@ -97,7 +97,8 @@ public abstract class Graph {
      * @return a non-modifiable collection with the valid edges in the graph.
      */
     public Collection<Edge> getValidEdges() {
-        return Collections2.filter(getEdges(), validFilter);
+        return Collections.unmodifiableCollection(
+                Collections2.filter(E, validFilter));
     }
 
     /**
@@ -210,7 +211,7 @@ public abstract class Graph {
      */
     public boolean hasValidEdge(Node n1, Node n2) {
         if (!hasNode(n2)) throw new IllegalArgumentException(ERR_INEX_NODE);
-        Edge e = getAdjacencyMap(n1).get(n2);
+        final Edge e = getAdjacencyMap(n1).get(n2);
         return e != null && e.isValid();
     }
 
@@ -248,14 +249,11 @@ public abstract class Graph {
                 .append("Nodes:").append(NEW_LINE);
 
         s.append("    ").append(getNodes()).append(NEW_LINE);
-        //for (Node n : getNodes()) s.append("    ").append(n).append(NEW_LINE);
 
         s.append(NEW_LINE).append("Edges:").append(NEW_LINE);
 
         s.append("    ").append(getEdges()).append(NEW_LINE);
-        /*for (Edge e : getEdges())
-            s.append("    ").append(e).append(NEW_LINE);
-        */
+
         return s.toString();
     }
 
@@ -268,7 +266,7 @@ public abstract class Graph {
      */
     public boolean addNode(Node n) {
         if (n == null) throw new NullPointerException();
-        boolean existed = V.contains(n);
+        final boolean existed = V.contains(n);
         if (!existed) G.put(n, new LinkedHashMap<>());
         return !existed;
     }
@@ -297,7 +295,7 @@ public abstract class Graph {
      */
     public boolean removeNode(Node n) {
         Map<Node, Edge> adjList = G.get(n);
-        boolean existed = adjList != null;
+        final boolean existed = adjList != null;
         if (existed) {
             V.remove(n);
             for (Map.Entry<Node, Edge> pair : adjList.entrySet()) {
@@ -327,7 +325,7 @@ public abstract class Graph {
         Map<Node, Edge> adjMap1 = getAdjacencyMap(n1);
         Map<Node, Edge> adjMap2 = getAdjacencyMap(n2);
 
-        boolean existed = !E.add(e);
+        final boolean existed = !E.add(e);
         if (!existed) {
             adjMap1.put(n2, e);
             adjMap2.put(n1, e);
@@ -351,8 +349,8 @@ public abstract class Graph {
         Map<Node, Edge> adjMap1 = getAdjacencyMap(n1);
         Map<Node, Edge> adjMap2 = getAdjacencyMap(n2);
 
-        Edge e = adjMap1.remove(n2);
-        boolean existed = e != null;
+        final Edge e = adjMap1.remove(n2);
+        final boolean existed = e != null;
         if (existed) {
             adjMap2.remove(n1);
             E.remove(e);
@@ -364,7 +362,7 @@ public abstract class Graph {
      * Invalidates all edges in the graph
      */
     public void invalidateAllEdges() {
-        for (Edge e : getEdges()) e.setValidity(false);
+        for (Edge e : E) e.setValidity(false);
     }
 
 }
