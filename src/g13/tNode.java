@@ -28,9 +28,10 @@ public class tNode extends Node {
     }
 
     @Override
-    public boolean isGreater(Node n) {
-        return ((tNode) n).getKey() < this.key;
+    public int compareTo(Node n) {
+        return key - ((tNode) n).getKey();
     }
+
 
     public int getKey() {
         return key;
