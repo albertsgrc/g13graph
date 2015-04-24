@@ -19,7 +19,7 @@ public class tNode extends Node {
 
     @Override
     public int hashCode() {
-        return Integer.hashCode(key);
+        return ((Integer) key).hashCode();
     }
 
     @Override

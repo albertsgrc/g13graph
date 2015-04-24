@@ -267,7 +267,7 @@ public abstract class Graph {
     public boolean addNode(Node n) {
         if (n == null) throw new NullPointerException();
         final boolean existed = V.contains(n);
-        if (!existed) G.put(n, new LinkedHashMap<>());
+        if (!existed) G.put(n, new LinkedHashMap<Node, Edge>());
         return !existed;
     }
 
@@ -297,11 +297,11 @@ public abstract class Graph {
         Map<Node, Edge> adjList = G.get(n);
         final boolean existed = adjList != null;
         if (existed) {
-            V.remove(n);
             for (Map.Entry<Node, Edge> pair : adjList.entrySet()) {
                 G.get(pair.getKey()).remove(n);
                 E.remove(pair.getValue());
             }
+            G.remove(n);
         }
         return existed;
     }

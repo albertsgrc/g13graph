@@ -71,6 +71,34 @@ public class DriverGraph {
     public static double readDouble() throws IOException {
         return Double.parseDouble(readString());
     }
+
+    private static NodePair readNodePair() throws IOException {
+        print("Enter the first node:\n");
+        tNode n1 = readNode();
+        print("Enter the second node:\n");
+        tNode n2 = readNode();
+        return new NodePair(n1, n2);
+    }
+
+    private static tEdge readEdge() throws IOException {
+        NodePair e = readNodePair();
+        print("Enter the edge weight (double): ");
+        double w = readDouble();
+        return new tEdge(e.first, e.second, w, true);
+    }
+
+    private static tNode readNode() throws IOException {
+        int key;
+        String value;
+        print("Enter the node key (int): ");
+        key = readInteger();
+        return new tNode(key);
+    }
+
+    private static void readOption() throws IOException {
+        print("\nEnter an option: ");
+        op = readString();
+    }
     
     public static void main(String args[]) throws IOException {
         tGraph G = new tGraph();
@@ -177,33 +205,5 @@ public class DriverGraph {
             }
             readOption();
         }
-    }
-
-    private static NodePair readNodePair() throws IOException {
-        print("Enter the first node:\n");
-        tNode n1 = readNode();
-        print("Enter the second node:\n");
-        tNode n2 = readNode();
-        return new NodePair(n1, n2);
-    }
-
-    private static tEdge readEdge() throws IOException {
-        NodePair e = readNodePair();
-        print("Enter the edge weight (double): ");
-        double w = readDouble();
-        return new tEdge(e.first, e.second, w, true);
-    }
-
-    private static tNode readNode() throws IOException {
-        int key;
-        String value;
-        print("Enter the node key (int): ");
-        key = readInteger();
-        return new tNode(key);
-    }
-
-    private static void readOption() throws IOException {
-        print("\nEnter an option: ");
-        op = readString();
     }
 }
