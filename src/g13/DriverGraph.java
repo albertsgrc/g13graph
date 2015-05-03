@@ -1,8 +1,7 @@
 package g13;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.Scanner;
 
 public class DriverGraph {
 
@@ -16,17 +15,20 @@ public class DriverGraph {
         }
     }
 
-    private static String op;
-    private static BufferedReader cin;
-    private static final String[] OPTION_LIST = new String[] {
-            "ADD_NODE", "REMOVE_NODE", "ADD_EDGE", "REMOVE_EDGE",
-            "HAS_EDGE", "HAS_VALID_EDGE", "HAS_NODE", "GET_ORDER",
-            "GET_EDGE_COUNT", "GET_VALID_EDGE_COUNT", "GET_EDGES",
-            "GET_VALID_EDGES", "GET_NODES", "GET_ADJACENCY_LIST",
-            "GET_VALID_ADJACENCY_LIST", "GET_NODE_DEGREE",
-            "GET_VALID_NODE_DEGREE", "GET_EDGE", "REMOVE_ALL_NODE_EDGES",
-            "INVALIDATE_ALL_EDGES", "SET_EDGE_WEIGHT",
-            "SET_EDGE_VALIDITY", "PRINT_GRAPH", "PRINT_OPTION_LIST", "EXIT"
+    private static Scanner cin;
+
+    private enum Option {
+        ADD_NODE, REMOVE_NODE, ADD_EDGE, REMOVE_EDGE,
+        HAS_EDGE, HAS_VALID_EDGE, HAS_NODE, GET_ORDER,
+        GET_EDGE_COUNT, GET_VALID_EDGE_COUNT, GET_EDGES,
+        GET_VALID_EDGES, GET_NODES, GET_ADJACENCY_LIST,
+        GET_VALID_ADJACENCY_LIST, GET_NODE_DEGREE,
+        GET_VALID_NODE_DEGREE, GET_EDGE, REMOVE_ALL_NODE_EDGES,
+        INVALIDATE_ALL_EDGES, SET_EDGE_WEIGHT, SET_EDGE_VALIDITY, PRINT_GRAPH,
+        GET_NEIGHBOURS, GET_VALID_NEIGHBOURS, GET_EDGE_VALIDITY,
+        GET_EDGE_WEIGHT,
+
+        PRINT_OPTIONS, PRINT, EXIT
 
     };
 
@@ -47,32 +49,22 @@ public class DriverGraph {
     }
 
     public static void printOptions() {
-        print("OPTION LIST:");
-        for (String option : OPTION_LIST) print("* " + option);
-        print("END OF OPTION LIST\n");
+        print("Option list:");
+        for (Option op : Option.values()) print("* " + op);
+        print("");
     }
 
     private static void printErr(String s) {
         print("!!! ERR: " + s);
     }
 
-    public static boolean readBoolean() throws IOException {
-        return Boolean.parseBoolean(readString());
+    private static String readStringWithSpaces() {
+        String line = cin.nextLine().trim();
+        while (line.isEmpty()) line = cin.nextLine().trim();
+        return line;
     }
 
-    public static int readInteger() throws IOException {
-        return Integer.parseInt(readString());
-    }
-    
-    public static String readString() throws IOException {
-        return cin.readLine();
-    }
-    
-    public static double readDouble() throws IOException {
-        return Double.parseDouble(readString());
-    }
-
-    private static NodePair readNodePair() throws IOException {
+    private static NodePair readNodePair() {
         print("Enter the first node:\n");
         tNode n1 = readNode();
         print("Enter the second node:\n");
@@ -80,130 +72,250 @@ public class DriverGraph {
         return new NodePair(n1, n2);
     }
 
-    private static tEdge readEdge() throws IOException {
+    private static tEdge readEdge() {
         NodePair e = readNodePair();
         print("Enter the edge weight (double): ");
-        double w = readDouble();
-        return new tEdge(e.first, e.second, w, true);
+        return new tEdge(e.first, e.second, cin.nextDouble(), true);
     }
 
-    private static tNode readNode() throws IOException {
-        int key;
-        String value;
+    private static tNode readNode() {
         print("Enter the node key (int): ");
-        key = readInteger();
-        return new tNode(key);
+        return new tNode(cin.nextInt());
     }
 
-    private static void readOption() throws IOException {
-        print("\nEnter an option: ");
-        op = readString();
+    private static Option readOption() throws IOException {
+        Option res = null;
+
+        boolean valid = false;
+        while (!valid) {
+            print("Enter an option: ");
+            String opt = readStringWithSpaces();
+            try {
+                res = Option.valueOf(opt.toUpperCase());
+                valid = true;
+            } catch (IllegalArgumentException e) {
+                printErr("Invalid option name");
+                print("Enter " + Option.PRINT_OPTIONS +
+                        " to list available options\n");
+            }
+        }
+
+        return res;
     }
     
     public static void main(String args[]) throws IOException {
         tGraph G = new tGraph();
-        cin = new BufferedReader(new InputStreamReader(System.in));
+        cin = new Scanner(System.in);
 
         printOptions();
 
-        readOption();
-        while (!op.equals("EXIT")) {
+        Option op = readOption();
+        while (op != Option.EXIT) {
             switch(op) {
-                case "ADD_NODE":
-                    G.addNode(readNode());
+                case ADD_NODE:
+                    boolean added = G.addNode(readNode());
+                    if (!added) print("The node wasn't added because it " +
+                            "already belonged to the graph");
                     break;
-                case "REMOVE_NODE":
-                    G.removeNode(readNode());
+                case REMOVE_NODE:
+                    boolean removed = G.removeNode(readNode());
+                    if (!removed) print("The node wasn't removed because it " +
+                            "didn't belong to the graph");
                     break;
-                case "ADD_EDGE":
-                    G.addEdge(readEdge());
+                case ADD_EDGE:
+                    try {
+                        boolean added2 = G.addEdge(readEdge());
+                        if (!added2) print("The edge wasn't added because it " +
+                                "already belonged to the graph");
+                    } catch (IllegalArgumentException e) {
+                        print("An error occured while adding the edge: " +
+                                e.getMessage());
+                    }
                     break;
-                case "REMOVE_EDGE":
+                case REMOVE_EDGE:
                     NodePair np = readNodePair();
-                    G.removeEdge(np.first, np.second);
+                    try {
+                        boolean removed2 = G.removeEdge(np.first, np.second);
+                        if (!removed2)
+                            print("The edge wasn't removed because " +
+                                    "it didn't belong to the graph");
+                    } catch(IllegalArgumentException e) {
+                        print("An error occured while trying to remove the " +
+                                "edge: " + e.getMessage());
+                    }
                     break;
-                case "HAS_EDGE":
+                case HAS_EDGE:
                     NodePair np2 = readNodePair();
-                    printBoolean(G.hasEdge(np2.first, np2.second));
+                    try {
+                        printBoolean(G.hasEdge(np2.first, np2.second));
+                    } catch(IllegalArgumentException e) {
+                        print("An error occured while checking the edge: " +
+                                e.getMessage());
+                    }
                     break;
-                case "HAS_NODE":
+                case HAS_NODE:
                     printBoolean(G.hasNode(readNode()));
                     break;
-                case "GET_ORDER":
+                case GET_ORDER:
                     printInteger(G.getOrder());
                     break;
-                case "GET_EDGE_COUNT":
+                case GET_EDGE_COUNT:
                     printInteger(G.getEdgeCount());
                     break;
-                case "GET_VALID_EDGE_COUNT":
+                case GET_VALID_EDGE_COUNT:
                     printInteger(G.getValidEdgeCount());
                     break;
-                case "GET_EDGES":
+                case GET_EDGES:
                     print(G.getEdges().toString());
                     break;
-                case "GET_NODES":
+                case GET_NODES:
                     print(G.getNodes().toString());
                     break;
-                case "GET_VALID_EDGES":
+                case GET_VALID_EDGES:
                     print(G.getValidEdges().toString());
                     break;
-                case "GET_ADJACENCY_LIST":
-                    print(G.getAdjacencyList(readNode()).toString());
+                case GET_ADJACENCY_LIST:
+                    try {
+                        print(G.getAdjacencyList(readNode()).toString());
+                    } catch (IllegalArgumentException e) {
+                        print("An error occured while getting the adjacency " +
+                                "list: " + e.getMessage());
+                    }
                     break;
-                case "GET_VALID_ADJACENCY_LIST":
-                    print(G.getValidAdjacencyList(readNode()).toString());
+                case GET_VALID_ADJACENCY_LIST:
+                    try {
+                        print(G.getValidAdjacencyList(readNode()).toString());
+                    } catch (IllegalArgumentException e) {
+                        print("An error occured while getting the valid " +
+                                "adjacency list: " + e.getMessage());
+                    }
                     break;
-                case "GET_NODE_DEGREE":
-                    printInteger(G.getNodeDegree(readNode()));
+                case GET_NODE_DEGREE:
+                    try {
+                        printInteger(G.getNodeDegree(readNode()));
+                    }
+                    catch(IllegalArgumentException e) {
+                        print("An error occured while retrieving the node " +
+                                "degree: " + e.getMessage());
+                    }
                     break;
-                case "GET_VALID_NODE_DEGREE":
-                    printInteger(G.getValidNodeDegree(readNode()));
+                case GET_VALID_NODE_DEGREE:
+                    try {
+                        printInteger(G.getValidNodeDegree(readNode()));
+                    } catch(IllegalArgumentException e) {
+                        print("An error occured while retrieving the valid " +
+                                "node degree: " + e.getMessage());
+                    }
                     break;
-                case "GET_EDGE":
+                case GET_EDGE:
                     NodePair np3 = readNodePair();
-                    print(G.getEdge(np3.first, np3.second).toString());
+                    try {
+                        Edge e = G.getEdge(np3.first, np3.second);
+                        if (e == null)
+                            print("The edge doesn't belong to the graph");
+                        else print(e.toString());
+                    } catch (IllegalArgumentException e) {
+                        print("An error occured while retrieving the edge: "
+                                + e.getMessage());
+                    }
                     break;
-                case "HAS_VALID_EDGE":
+                case HAS_VALID_EDGE:
                     NodePair np4 = readNodePair();
-                    printBoolean(G.hasValidEdge(np4.first, np4.second));
+                    try {
+                        printBoolean(G.hasValidEdge(np4.first, np4.second));
+                    } catch (IllegalArgumentException e) {
+                        print("An error occured while checking the valid edge: "
+                                + e.getMessage());
+                    }
                     break;
-                case "REMOVE_ALL_NODE_EDGES":
-                    G.removeAllNodeEdges(readNode());
+                case REMOVE_ALL_NODE_EDGES:
+                    try {
+                        G.removeAllNodeEdges(readNode());
+                    } catch (IllegalArgumentException e) {
+                        print("An error occured while removing the node edges: "
+                                + e.getMessage());
+                    }
                     break;
-                case "INVALIDATE_ALL_EDGES":
+                case INVALIDATE_ALL_EDGES:
                     G.invalidateAllEdges();
                     break;
-                case "SET_EDGE_WEIGHT":
-                    Edge e = readEdge();
-                    G.getEdge(e.getNode(), e.getNeighbor(e.getNode()))
-                            .setWeight(e.getWeight());
+                case SET_EDGE_WEIGHT:
+                    Edge edge = readEdge();
+                    try {
+                        Edge graphEdge = G.getEdge(edge.getNode(),
+                                edge.getNeighbor(edge.getNode()));
+                        if (graphEdge == null)
+                            print("The edge doesn't belong to the graph");
+                        else graphEdge.setWeight(edge.getWeight());
+                    } catch (IllegalArgumentException e) {
+                        print("There was an error while setting the edge " +
+                                "weight: " + e.getMessage());
+                    }
                     break;
-                case "SET_EDGE_VALIDITY":
+                case SET_EDGE_VALIDITY:
                     NodePair np5 = readNodePair();
-                    print("Enter the desired validity: ");
-                    G.getEdge(np5.first, np5.second)
-                            .setValidity(readBoolean());
+                    print("Enter the desired validity (true/false):");
+                    try {
+                        Edge edge2 = G.getEdge(np5.first, np5.second);
+                        if (edge2 == null)
+                            print("The edge doesn't belong to the graph");
+                        else edge2.setValidity(cin.nextBoolean());
+                    } catch (IllegalArgumentException e) {
+                        print("There was an error while setting the edge " +
+                                "validity: " + e.getMessage());
+                    }
                     break;
-                case "PRINT_EDGE_WEIGHT":
+                case GET_EDGE_WEIGHT:
                     NodePair np6 = readNodePair();
-                    printDouble(G.getEdge(np6.first, np6.second).getWeight());
+                    try {
+                        Edge edge2 = G.getEdge(np6.first, np6.second);
+                        if (edge2 == null)
+                            print("The edge doesn't belong to the graph");
+                        else printDouble(edge2.getWeight());
+                    } catch (IllegalArgumentException e) {
+                        print("An error occured while retrieving the edge " +
+                                "weight: " + e.getMessage());
+                    }
                     break;
-                case "PRINT_EDGE_VALIDITY":
+                case GET_NEIGHBOURS:
+                    try {
+                        print(G.getNeighbours(readNode()).toString());
+                    } catch (IllegalArgumentException e) {
+                        print("An error occured while getting the node " +
+                                "neighbours: " + e.getMessage());
+                    }
+                    break;
+                case GET_VALID_NEIGHBOURS:
+                    try {
+                        print(G.getValidNeighbours(readNode()).toString());
+                    } catch (IllegalArgumentException e) {
+                        print("An error occured while getting the node " +
+                                "valid neighbours: " + e.getMessage());
+                    }
+                    break;
+                case GET_EDGE_VALIDITY:
                     NodePair np7 = readNodePair();
-                    printBoolean(G.getEdge(np7.first, np7.second).isValid());
+                    try {
+                        Edge edge2 = G.getEdge(np7.first, np7.second);
+                        if (edge2 == null)
+                            print("The edge doesn't belong to the graph");
+                        else printBoolean(edge2.isValid());
+                    } catch (IllegalArgumentException e) {
+                        print("An error occured while retrieving the edge " +
+                                "validity: " + e.getMessage());
+                    }
                     break;
-                case "PRINT_GRAPH":
+                case PRINT:
+                    print(readStringWithSpaces());
+                    break;
+                case PRINT_GRAPH:
                     print(G.toString());
                     break;
-                case "PRINT_OPTION_LIST":
+                case PRINT_OPTIONS:
                     printOptions();
                     break;
-                default:
-                    printErr("Invalid operation name\n*** HINT: Enter " +
-                        "PRINT_OPTION_LIST to list available options");
-                    break;
             }
-            readOption();
+            op = readOption();
         }
     }
 }
