@@ -213,7 +213,8 @@ public abstract class Graph {
     /**
      * Returns whether the graph contains a given edge <strong>formed by two
      * nodes belonging to the graph</strong>.
-     * @param n1 The pair of nodes of the edge to test for belonging.
+     * @param n1 One of the nodes of the edge to test for belonging.
+     * @param n2 The other node of the edge to test for belonging.
      * @return true if there exists an edge e in the graph such that
      * it contains the two given nodes (no matter the order in which they're
      * given).
@@ -229,7 +230,8 @@ public abstract class Graph {
     /**
      * Returns whether the graph contains a given valid edge <strong>formed by
      * two nodes belonging to the graph</strong>.
-     * @param n1 The pair of nodes of the valid edge to test for belonging.
+     * @param n1 One of the nodes of the valid edge to test for belonging.
+     * @param n2 The other node of the valid edge to test for belonging.
      * @return true if there exists a valid edge e in the graph such that
      * it contains the two given nodes (no matter the order in which they're
      * given).
